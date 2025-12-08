@@ -34,28 +34,28 @@ jobs:
             bin: ./bin/godot.windows.editor.x86_64.exe
             compiler: msvc
 
-          - name: Editor w/ clang-cl (target=editor, use_llvm=yes)
-            cache-name: windows-editor-clang
-            target: editor
-            scons-flags: >-
-              windows_subsystem=console
-              use_llvm=yes
-            bin: ./bin/godot.windows.editor.x86_64.llvm.exe
-            compiler: clang
+          # - name: Editor w/ clang-cl (target=editor, use_llvm=yes)
+          #   cache-name: windows-editor-clang
+          #   target: editor
+          #   scons-flags: >-
+          #     windows_subsystem=console
+          #     use_llvm=yes
+          #   bin: ./bin/godot.windows.editor.x86_64.llvm.exe
+          #   compiler: clang
 
-          - name: Template (target=template_release)
-            cache-name: windows-template
-            target: template_release
-            bin: ./bin/godot.windows.template_release.x86_64.console.exe
-            compiler: msvc
+          # - name: Template (target=template_release)
+          #   cache-name: windows-template
+          #   target: template_release
+          #   bin: ./bin/godot.windows.template_release.x86_64.console.exe
+          #   compiler: msvc
 
-          - name: Template w/ GCC (target=template_release, use_mingw=yes)
-            cache-name: windows-template-gcc
-            # MinGW takes MUCH longer to compile; save time by only targeting Template.
-            target: template_release
-            scons-flags: use_mingw=yes
-            bin: ./bin/godot.windows.template_release.x86_64.console.exe
-            compiler: gcc
+          # - name: Template w/ GCC (target=template_release, use_mingw=yes)
+          #   cache-name: windows-template-gcc
+          #   # MinGW takes MUCH longer to compile; save time by only targeting Template.
+          #   target: template_release
+          #   scons-flags: use_mingw=yes
+          #   bin: ./bin/godot.windows.template_release.x86_64.console.exe
+          #   compiler: gcc
 
     steps:
       - name: Checkout
@@ -105,6 +105,13 @@ jobs:
 
       - name: Extract pre-built AccessKit
         run: unzip -o accesskit-c-0.17.0/accesskit_c.zip
+
+      - name: Start VCPerf Trace
+        if: matrix.name == 'Editor (target=editor)'
+        uses: ./.github/actions/vcperf-trace
+        with:
+          trace-name: 'godot-editor-build'
+          artifact-name: 'editor-build-trace-analysis'
 
       - name: Compilation
         uses: ./.github/actions/godot-build
