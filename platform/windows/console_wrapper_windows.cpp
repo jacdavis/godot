@@ -28,11 +28,12 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include <windows.h>
-
-#include <shlwapi.h>
+// Include C++ headers first to avoid type conflicts with MSVC 2025+
 #include <cstdio>
 #include <cstdlib>
+
+#include <windows.h>
+#include <shlwapi.h>
 
 #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
 #define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x4

@@ -150,12 +150,20 @@ def detect_build_env_arch():
 def get_tools(env: "SConsEnvironment"):
     from SCons.Tool.MSCommon import msvc_exists
 
-    if os.name != "nt" or env.get("use_mingw") or not msvc_exists():
+    # Check if we're already in a VS environment (handles VS Insiders and newer versions)
+    has_vs_env = os.getenv("VCINSTALLDIR") or os.getenv("VCTOOLSINSTALLDIR")
+    
+    if os.name != "nt" or env.get("use_mingw") or (not has_vs_env and not msvc_exists()):
         return ["mingw"]
     else:
         msvc_arch_aliases = {"x86_32": "x86", "arm32": "arm"}
         env["TARGET_ARCH"] = msvc_arch_aliases.get(env["arch"], env["arch"])
-        env["MSVC_VERSION"] = env["MSVS_VERSION"] = env.get("msvc_version")
+        # If no msvc_version specified and we're in a VS environment, use a compatible default
+        msvc_version = env.get("msvc_version")
+        if not msvc_version and has_vs_env:
+            # Use 14.3 as a default for VS 2022+ (including Insiders)
+            msvc_version = "14.3"
+        env["MSVC_VERSION"] = env["MSVS_VERSION"] = msvc_version
         return ["msvc", "mslink", "mslib"]
 
 
@@ -240,6 +248,17 @@ def get_flags():
 
 def configure_msvc(env: "SConsEnvironment"):
     """Configure env to work with MSVC"""
+
+    # If we're in a VS Developer Command Prompt, preserve the environment variables
+    # This is necessary for VS Insiders and other versions that SCons doesn't auto-detect
+    if os.getenv("VCINSTALLDIR") or os.getenv("VCTOOLSINSTALLDIR"):
+        # Preserve INCLUDE, LIB, and LIBPATH from the environment
+        if os.getenv("INCLUDE"):
+            env["ENV"]["INCLUDE"] = os.getenv("INCLUDE")
+        if os.getenv("LIB"):
+            env["ENV"]["LIB"] = os.getenv("LIB")
+        if os.getenv("LIBPATH"):
+            env["ENV"]["LIBPATH"] = os.getenv("LIBPATH")
 
     ## Build type
 
@@ -352,6 +371,9 @@ def configure_msvc(env: "SConsEnvironment"):
     env.AppendUnique(CCFLAGS=["/Gd", "/GR", "/nologo"])
     env.AppendUnique(CCFLAGS=["/utf-8"])  # Force to use Unicode encoding.
     env.AppendUnique(CCFLAGS=["/bigobj"])  # Support big objects.
+    env.AppendUnique(CCFLAGS=["/Zc:__cplusplus"])  # Enable correct __cplusplus macro value
+    # Workaround for MSVC 19.50+ predefined types issue
+    env.AppendUnique(CCFLAGS=["/D_HAS_EXCEPTIONS=0"])
 
     env.AppendUnique(
         CPPDEFINES=[
