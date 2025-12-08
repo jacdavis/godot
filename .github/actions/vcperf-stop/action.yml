@@ -1,0 +1,15 @@
+name: 'VCPerf Stop Trace'
+description: 'Stops vcperf tracing after build and uploads analysis'
+inputs:
+  trace-name:
+    description: 'Name for the trace session and output files'
+    required: false
+    default: 'BuildTrace'
+  artifact-name:
+    description: 'Name for the uploaded artifact'
+    required: false
+    default: 'build-trace-analysis'
+
+runs:
+  using: 'node20'
+  main: 'index.js'

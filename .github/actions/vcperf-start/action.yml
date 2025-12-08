@@ -1,0 +1,11 @@
+name: 'VCPerf Start Trace'
+description: 'Starts vcperf tracing before build'
+inputs:
+  trace-name:
+    description: 'Name for the trace session and output files'
+    required: false
+    default: 'BuildTrace'
+
+runs:
+  using: 'node20'
+  main: 'index.js'

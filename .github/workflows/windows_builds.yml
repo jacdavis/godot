@@ -108,10 +108,9 @@ jobs:
 
       - name: Start VCPerf Trace
         if: matrix.name == 'Editor (target=editor)'
-        uses: ./.github/actions/vcperf-trace
+        uses: ./.github/actions/vcperf-start
         with:
           trace-name: 'godot-editor-build'
-          artifact-name: 'editor-build-trace-analysis'
 
       - name: Compilation
         uses: ./.github/actions/godot-build
@@ -119,6 +118,13 @@ jobs:
           scons-flags: ${{ env.SCONS_FLAGS }} ${{ matrix.scons-flags }} d3d12=${{ steps.d3d12-sdk.outputs.D3D12_ENABLED }}
           platform: windows
           target: ${{ matrix.target }}
+
+      - name: Stop VCPerf Trace
+        if: matrix.name == 'Editor (target=editor)' && always()
+        uses: ./.github/actions/vcperf-stop
+        with:
+          trace-name: 'godot-editor-build'
+          artifact-name: 'editor-build-trace-analysis'
 
       - name: Save Godot build cache
         uses: ./.github/actions/godot-cache-save
