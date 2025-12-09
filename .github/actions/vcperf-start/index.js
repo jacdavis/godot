@@ -7,26 +7,31 @@ async function run() {
   try {
     const traceName = core.getInput('trace-name');
     
-    // Find vcperf.exe
-    const vsPath = 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC';
+    // Find vcperf.exe - check all VS editions
+    const vsBasePath = 'C:\\Program Files\\Microsoft Visual Studio\\2022';
+    const editions = ['Enterprise', 'Professional', 'Community'];
     let vcperfPath = null;
     
-    if (fs.existsSync(vsPath)) {
-      const findVcperf = (dir) => {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            const result = findVcperf(fullPath);
-            if (result) return result;
-          } else if (entry.name === 'vcperf.exe') {
-            return fullPath;
-          }
+    const findVcperf = (dir) => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          const result = findVcperf(fullPath);
+          if (result) return result;
+        } else if (entry.name === 'vcperf.exe') {
+          return fullPath;
         }
-        return null;
-      };
-      
-      vcperfPath = findVcperf(vsPath);
+      }
+      return null;
+    };
+    
+    for (const edition of editions) {
+      const vsPath = path.join(vsBasePath, edition, 'VC', 'Tools', 'MSVC');
+      if (fs.existsSync(vsPath)) {
+        vcperfPath = findVcperf(vsPath);
+        if (vcperfPath) break;
+      }
     }
     
     if (vcperfPath) {
