@@ -1,0 +1,11 @@
+{
+  "name": "vcperf-stop-action",
+  "version": "1.0.0",
+  "description": "GitHub Action to stop vcperf tracing and upload artifacts",
+  "main": "index.js",
+  "scripts": {},
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/artifact": "^2.1.7"
+  }
+}
