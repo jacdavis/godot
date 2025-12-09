@@ -34,15 +34,11 @@ async function run() {
           const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
           core.info(`Successfully created ${jsonFile} (${sizeMB} MB)`);
           
-          // Upload artifact using artifact action
+          // Upload artifact using artifact action v2 API
           const artifact = require('@actions/artifact');
-          const artifactClient = artifact.create();
-          const files = [jsonFile];
-          const rootDirectory = process.cwd();
+          const artifactClient = new artifact.DefaultArtifactClient();
           
-          await artifactClient.uploadArtifact(artifactName, files, rootDirectory, {
-            continueOnError: false
-          });
+          await artifactClient.uploadArtifact(artifactName, [jsonFile], process.cwd());
           core.info(`Uploaded artifact: ${artifactName}`);
         } else {
           core.warning('JSON file was not created');
