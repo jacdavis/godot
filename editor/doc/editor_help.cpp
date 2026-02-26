@@ -955,7 +955,7 @@ void EditorHelp::_update_method_descriptions(const DocData::ClassDoc &p_classdoc
 #undef HANDLE_DOC
 }
 
-void EditorHelp::_update_doc() {
+_NO_INLINE_ void EditorHelp::_update_doc() {
 	if (!doc->class_list.has(edited_class)) {
 		return;
 	}
@@ -2455,7 +2455,7 @@ void EditorHelp::_help_callback(const String &p_topic) {
 	}
 }
 
-static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt, const Control *p_owner_node, const String &p_class) {
+_NO_INLINE_ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt, const Control *p_owner_node, const String &p_class) {
 	bool is_native = false;
 	{
 		const DocData::ClassDoc *E = EditorHelp::get_doc(p_class);

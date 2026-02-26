@@ -541,7 +541,7 @@ _FORCE_INLINE_ void TextServerAdvanced::_insert_feature(const StringName &p_name
 	feature_sets_inv.insert(p_tag, fi);
 }
 
-void TextServerAdvanced::_insert_feature_sets() {
+_NO_INLINE_ void TextServerAdvanced::_insert_feature_sets() {
 	// Registered OpenType feature tags.
 	// Name, Tag, Data Type, Hidden
 	_insert_feature("access_all_alternates", HB_TAG('a', 'a', 'l', 't'), Variant::Type::INT, false);
@@ -5864,7 +5864,7 @@ RID TextServerAdvanced::_find_sys_font_for_text(const RID &p_fdef, const String 
 	return f;
 }
 
-void TextServerAdvanced::_shaped_text_overrun_trim_to_width(const RID &p_shaped_line, double p_width, BitField<TextServer::TextOverrunFlag> p_trim_flags) {
+_NO_INLINE_ void TextServerAdvanced::_shaped_text_overrun_trim_to_width(const RID &p_shaped_line, double p_width, BitField<TextServer::TextOverrunFlag> p_trim_flags) {
 	ShapedTextDataAdvanced *sd = shaped_owner.get_or_null(p_shaped_line);
 	ERR_FAIL_NULL_MSG(sd, "ShapedTextDataAdvanced invalid.");
 
@@ -6734,7 +6734,7 @@ UBreakIterator *TextServerAdvanced::_create_line_break_iterator_for_locale(const
 	return ubrk_clone(bi, r_err);
 }
 
-void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int64_t p_start, int64_t p_end, hb_script_t p_script, hb_direction_t p_direction, FontPriorityList &p_fonts, int64_t p_span, int64_t p_fb_index, int64_t p_prev_start, int64_t p_prev_end, RID p_prev_font) {
+_NO_INLINE_ void TextServerAdvanced::_shape_run(ShapedTextDataAdvanced *p_sd, int64_t p_start, int64_t p_end, hb_script_t p_script, hb_direction_t p_direction, FontPriorityList &p_fonts, int64_t p_span, int64_t p_fb_index, int64_t p_prev_start, int64_t p_prev_end, RID p_prev_font) {
 	RID f;
 	int fs = p_sd->spans[p_span].font_size;
 	if (p_fb_index >= 0 && p_fb_index < p_fonts.size()) {
